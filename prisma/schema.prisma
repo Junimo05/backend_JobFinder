@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userID   Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  Employee Employee?
+  Employer Employer?
+}
+
+model Employee {
+  employeeID    Int           @id @default(autoincrement())
+  userID        Int           @unique
+  name          String
+  age           Int           @unique
+  Phone         String?       @unique
+  Email         String        @unique
+  AboutMe       String?
+  Hobbies       String?
+  Employee_User User          @relation(fields: [userID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  Application   Application[]
+
+  @@index([userID])
+}
+
+model Employer {
+  employerID    Int    @id @default(autoincrement())
+  userID        Int    @unique
+  CompanyName   String
+  Industry      String //chuyen nganh
+  Email         String @unique
+  Phone         String @unique
+  Employer_User User   @relation(fields: [userID], references: [userID])
+  Job           Job[]
+
+  @@index([userID])
+}
+
+model Job {
+  jobID        Int           @id @default(autoincrement())
+  groupID      Int?          @unique
+  employerID   Int           @unique
+  JobTitle     String
+  Location     String
+  Description  String
+  Requirements String
+  Persons      Int
+  SalaryRange  String
+  PostDate     DateTime      @default(now())
+  CloseDate    DateTime
+  Deleted      Boolean       @default(false)
+  Application  Application[]
+  Job_Employer Employer      @relation(fields: [employerID], references: [employerID])
+  JobGroup_Job JobGroup?     @relation(fields: [groupID], references: [groupID])
+
+  @@index([employerID])
+}
+
+model JobGroup {
+  groupID       Int    @id @default(autoincrement())
+  jobGroupTitle String
+  Description   String
+  Job           Job?
+}
+
+model Application {
+  appID          Int      @id @default(autoincrement())
+  employeeID     Int      @unique
+  jobID          Int
+  Description    String
+  applyDate      DateTime @default(now())
+  Status         String   @default("Waiting")
+  Appli_Employee Employee @relation(fields: [employeeID], references: [employeeID])
+  Appli_Job      Job      @relation(fields: [jobID], references: [jobID])
+
+  @@index([employeeID])
+  @@index([jobID])
+}
