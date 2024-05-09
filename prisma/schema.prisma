@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -71,7 +71,7 @@ model Job {
 
 model JobGroup {
   groupID       Int    @id @default(autoincrement())
-  jobGroupTitle String
+  jobGroupTitle String @unique
   Description   String
   Job           Job?
 }
@@ -86,6 +86,6 @@ model Application {
   Appli_Employee Employee @relation(fields: [employeeID], references: [employeeID])
   Appli_Job      Job      @relation(fields: [jobID], references: [jobID])
 
-  @@index([employeeID])
-  @@index([jobID])
+  @@index([employeeID], map: "employeeID")
+  @@index([jobID], map: "jobID")
 }

@@ -21,6 +21,11 @@ export class JobsController {
         return this.jobService.SearchJobByTitle(title)
     }
 
+    @Get('searchGroup/:group')
+    async getJobByGroup(@Param('group') group: string) {
+        return this.jobService.SearchJobByGroup(group)
+    }
+        
     @Post()
     async createJob(
         @Body()

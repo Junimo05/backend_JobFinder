@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User, Prisma } from '@prisma/client';
+import { contains } from 'class-validator';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -44,6 +45,29 @@ export class JobService {
                         contains: location
                     },
                 },
+            });
+            if(res){
+                return res;
+            }else{
+                console.log("error: ")
+                return({status: 400, message: "No Job Found"})
+            }
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
+    async SearchJobByGroup(group: string) {
+        try {
+            const res = await this.prisma.job.findMany({
+                where: {
+                    JobGroup_Job: {
+                        jobGroupTitle: group
+                    }
+                },
+                include: {
+                    JobGroup_Job: true,
+                }
             });
             if(res){
                 return res;
@@ -114,4 +138,6 @@ export class JobService {
           throw new Error(error.message);
         }
     }
+
+    
 }
