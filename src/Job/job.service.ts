@@ -59,20 +59,23 @@ export class JobService {
 
     async SearchJobByGroup(group: string) {
         try {
-            const res = await this.prisma.job.findMany({
+            const jobOnGroups = await this.prisma.jobOnGroup.findMany({
                 where: {
-                    JobGroup_Job: {
+                    JobGroup: {
                         jobGroupTitle: group
                     }
                 },
                 include: {
-                    JobGroup_Job: true,
+                    Job: true,
+                    JobGroup: true,
                 }
             });
-            if(res){
-                return res;
+    
+            if(jobOnGroups && jobOnGroups.length > 0){
+                const jobs = jobOnGroups.map(jobOnGroup => jobOnGroup.Job);
+                return jobs;
             }else{
-                console.log("error: ")
+                console.log("error: No Job Found")
                 return({status: 400, message: "No Job Found"})
             }
         } catch (error) {

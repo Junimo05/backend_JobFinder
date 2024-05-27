@@ -66,6 +66,47 @@ export class UserService {
         }
     }
 
+    async createUserWithEmployee(data: {
+        user: Prisma.UserCreateInput,
+        employee: Prisma.EmployeeCreateInput,
+      }) {
+        try {
+            const res = await this.prisma.user.create({
+                data: {
+                  ...data.user,
+                  Employee: {
+                    create: data.employee,
+                  },
+                },
+              });
+            return res;
+        } catch (error) {
+            console.log("cannot create User")
+            throw new Error(error)
+        }
+    }
+
+    async createUserWithEmployer(data: {
+        user: Prisma.UserCreateInput,
+        employer: Prisma.EmployerCreateInput,
+        }) {
+        
+        try {
+            const res = await this.prisma.user.create({
+                data: {
+                ...data.user,
+                Employer: {
+                    create: data.employer,
+                },
+                },
+            });
+            return res;
+        } catch (error) {
+            console.log("cannot create User")
+            throw new Error(error)
+        }
+    }
+
     async updatePasswordUser(
         param:{
             data: AccountDto
@@ -109,6 +150,34 @@ export class UserService {
           };
         } catch (error) {
           throw new Error(error.message);
+        }
+    }
+
+    async Login(data: Prisma.UserCreateInput) {
+        try {
+            const res = await this.prisma.user.findFirst({
+                where: {
+                    username: data.username,
+                    password: data.password
+                }
+            });
+            if(res){
+                return res;
+            }
+            else{
+                return {status: 400, message: "No User Found"};
+            }
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async Register(data: Prisma.UserCreateInput) {
+        try {
+            const res = await this.prisma.user.create({data: data});
+            return res;
+        } catch (error) {
+            throw new Error(error);
         }
     }
 }

@@ -30,7 +30,7 @@ model Employee {
   Email         String        @unique
   AboutMe       String?
   Hobbies       String?
-  Employee_User User          @relation(fields: [userID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  Employee_User User          @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: NoAction)
   Application   Application[]
 
   @@index([userID])
@@ -43,7 +43,7 @@ model Employer {
   Industry      String //chuyen nganh
   Email         String @unique
   Phone         String @unique
-  Employer_User User   @relation(fields: [userID], references: [userID])
+  Employer_User User   @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: NoAction)
   Job           Job[]
 
   @@index([userID])
@@ -51,7 +51,6 @@ model Employer {
 
 model Job {
   jobID        Int           @id @default(autoincrement())
-  groupID      Int?          @unique
   employerID   Int           @unique
   JobTitle     String
   Location     String
@@ -63,17 +62,27 @@ model Job {
   CloseDate    DateTime
   Deleted      Boolean       @default(false)
   Application  Application[]
-  Job_Employer Employer      @relation(fields: [employerID], references: [employerID])
-  JobGroup_Job JobGroup?     @relation(fields: [groupID], references: [groupID])
+  Job_Employer Employer      @relation(fields: [employerID], references: [employerID], onDelete: Cascade, onUpdate: NoAction)
+  JobGroup     JobOnGroup[]
 
   @@index([employerID])
 }
 
 model JobGroup {
-  groupID       Int    @id @default(autoincrement())
-  jobGroupTitle String @unique
+  groupID       Int          @id @default(autoincrement())
+  jobGroupTitle String       @unique
   Description   String
-  Job           Job?
+  JobOnGroup    JobOnGroup[]
+}
+
+model JobOnGroup {
+  jobID    Int      @id
+  groupID  Int
+  Job      Job      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction)
+  JobGroup JobGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([jobID], map: "jobID")
+  @@index([groupID], map: "groupID")
 }
 
 model Application {
@@ -83,8 +92,8 @@ model Application {
   Description    String
   applyDate      DateTime @default(now())
   Status         String   @default("Waiting")
-  Appli_Employee Employee @relation(fields: [employeeID], references: [employeeID])
-  Appli_Job      Job      @relation(fields: [jobID], references: [jobID])
+  Appli_Employee Employee @relation(fields: [employeeID], references: [employeeID], onDelete: Cascade, onUpdate: NoAction)
+  Appli_Job      Job      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([employeeID], map: "employeeID")
   @@index([jobID], map: "jobID")

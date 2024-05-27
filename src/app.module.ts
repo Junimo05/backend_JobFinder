@@ -8,16 +8,52 @@ import { EmployerModule } from './Employer/employer.module';
 import { EmployeeModule } from './Employee/employee.module';
 import { UserModule } from './User/user.module';
 import { JobGroupModule } from './JobGroup/jobgroup.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { from } from 'rxjs';
+import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigService from @nestjs/config
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    } 
+    ),
     PrismaModule,
     JobModule,
     ApplicationModule,
     EmployerModule,
     EmployeeModule,
     UserModule,
-    JobGroupModule
+    JobGroupModule,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({ 
+        transport: {
+          host: configService.get('MAIL_HOST'),
+          port: 587,
+          secure: false,
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASSWORD')
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${configService.get('MAIL_FROM')}>`,
+        },
+        template: {
+          dir: join(__dirname, '../src/templates/email'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+    }),
+    inject: [ConfigService],
+    }),
   ],
   controllers: [],
   providers: [],
