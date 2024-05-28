@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -55,38 +56,16 @@ export class EmployerService {
 
     }
 
-    async createEmployer(data: any){
-        try {
-            const res = await this.prisma.employer.create({
-                data:{
-                    ...data,
-                },
-            });
-            if(res){
-                return {status: 200, message: "Successful"}
-            }else{
-                return {message: "Error"}
-            }
-        } catch (error) {
-            throw new Error(error)
-        }
-    }
-
-    async updateEmployer(data: any){
+    async updateEmployer(param:{
+        data: Prisma.EmployerUpdateInput,
+        where: Prisma.EmployerWhereUniqueInput,
+    }){
         try {
             const res = await this.prisma.employer.update({
-                where:{
-                    employerID: Number(data.employerID)
-                },
-                data:{
-                    ...data,
-                },
+                data: param.data,
+                where: param.where,
             });
-            if(res){
-                return {status: 200, message: "Successful"}
-            }else{
-                return {message: "Error"}
-            }
+            return res;
         } catch (error) {
             throw new Error(error)
         }

@@ -1,10 +1,13 @@
+import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 
+@Injectable()
 export class JobGroupService {
     constructor(private prisma: PrismaService){}
     
     async getAllJobGroup(){
+        console.log(this.prisma);
         try {
             const res = await this.prisma.jobGroup.findMany();
             if(res.length > 0 || res){
@@ -55,12 +58,16 @@ export class JobGroupService {
     }
 
     async createJobGroup(data: Prisma.JobGroupCreateInput){
-        // let tmp: Prisma.JobCreateInput = data
         try {
-            const res = await this.prisma.jobGroup.create({data: data});
+            const res = await this.prisma.jobGroup.create({
+                data: {
+                    jobGroupTitle: data.jobGroupTitle,
+                    Description: data.Description,
+                }
+            });
             return res;
         } catch (error) {
-            console.log("cannot create Job")
+            console.log("cannot create JobGroup")
             throw new Error(error)
         }
     }

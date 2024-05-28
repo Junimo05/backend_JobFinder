@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { JobGroupService } from "./jobgroup.service";
 import { JobGroup, Prisma } from "@prisma/client";
 
-@Controller('jobgroups')
+@Controller('groups')
 export class JobGroupController {
     constructor(private jobgroupService: JobGroupService){}
 
@@ -27,7 +27,7 @@ export class JobGroupController {
         data: Prisma.JobGroupCreateInput
     ):Promise<JobGroup>
     {
-        return await this.jobgroupService.createJobGroup(data)   
+        return await this.jobgroupService.createJobGroup(data);   
     }
 
     @Patch(':id')

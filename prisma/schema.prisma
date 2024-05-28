@@ -76,10 +76,10 @@ model JobGroup {
 }
 
 model JobOnGroup {
-  jobID    Int      @id
+  jobID    Int       @id
   groupID  Int
-  Job      Job      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction)
-  JobGroup JobGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade, onUpdate: NoAction)
+  Job      Job?      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction)
+  JobGroup JobGroup? @relation(fields: [groupID], references: [groupID], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([jobID], map: "jobID")
   @@index([groupID], map: "groupID")
@@ -87,7 +87,7 @@ model JobOnGroup {
 
 model Application {
   appID          Int      @id @default(autoincrement())
-  employeeID     Int      @unique
+  employeeID     Int
   jobID          Int
   Description    String
   applyDate      DateTime @default(now())

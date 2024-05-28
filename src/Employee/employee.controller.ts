@@ -27,15 +27,6 @@ export class EmployeeController {
         return this.employeeService.getEmployeeByPhone(phone)
     }
 
-    @Post()
-    async createEmployee (
-        @Body()
-        employeeData: Prisma.EmployeeCreateInput
-    ):Promise<Employee>
-    {
-        return await this.employeeService.createEmployee(employeeData)
-    }
-
     @Patch(':id')
     async updateEmployee(
         @Param('id') id: string,

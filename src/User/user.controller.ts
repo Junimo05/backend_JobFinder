@@ -3,6 +3,7 @@ import { Job, Prisma, User } from "@prisma/client";
 import { UserService } from "./user.service";
 import { AccountDto } from "src/auth/dto/account.dto";
 import { MailerService } from "@nestjs-modules/mailer";
+import { randomBytes } from "crypto";
 
 @Controller('users')
 export class UsersController {
@@ -11,16 +12,20 @@ export class UsersController {
         private mailService: MailerService,
     ){}
 
-    @Get('/email')
-    async getEmail() {
-        return this.mailService.sendMail({
-            to: 'anhtuan552003@gmail.com',
-            subject: 'Testing Nest MailerModule',
-            template: './confirmUser',
+    @Get('/forgotPassword/:email')
+    async forgotPassword(@Param('email') email: string){
+        const code = randomBytes(3).toString('hex');
+
+        await this.mailService.sendMail({
+            to: email,
+            subject: 'Verification Code',
+            text: `Your code is ${code}`,
             context: {
-                code: '123456',
+                code: code,
             },
         });
+
+        return {code: code};
     }
 
     @Get('/getall')
