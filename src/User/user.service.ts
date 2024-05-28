@@ -165,7 +165,7 @@ export class UserService {
                 return res;
             }
             else{
-                return {status: 400, message: "No User Found"};
+                return {status: 400, message: "Username or Password is incorrect"};
             }
         } catch (error) {
             throw new Error(error);

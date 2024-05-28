@@ -37,7 +37,7 @@ export class ApplicationService{
 
     async getApplicationByUserID(id: string){
         try {
-            const res = await this.prisma.application.findUnique({
+            const res = await this.prisma.application.findMany({
                 where: {
                     employeeID: Number(id)
                 },
