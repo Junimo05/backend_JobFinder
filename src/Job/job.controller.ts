@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { JobService } from "./job.service";
-import { Job, Prisma } from "@prisma/client";
+import { job, Prisma } from "@prisma/client";
 
 @Controller('jobs')
 export class JobsController {
@@ -25,12 +25,12 @@ export class JobsController {
     async getJobByGroup(@Param('group') group: string) {
         return this.jobService.SearchJobByGroup(group)
     }
-        
+
     @Post()
     async createJob(
         @Body()
-        jobData: Prisma.JobCreateInput
-    ):Promise<Job>
+        jobData: Prisma.jobCreateInput
+    ):Promise<job>
     {
         return await this.jobService.createJob(jobData)   
     }
@@ -39,7 +39,7 @@ export class JobsController {
     async updateJob(
         @Param('id') id: string,
         @Body()
-        dto: Prisma.JobUpdateInput
+        dto: Prisma.jobUpdateInput
     ){
         return await this.jobService.updateJob({
             where: {jobID: Number(id)},

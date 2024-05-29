@@ -56,9 +56,27 @@ export class EmployerService {
 
     }
 
+    async getEmployerJobs(id: string){
+        try {
+            const res = await this.prisma.job.findMany({
+                where: {
+                    employerID: Number(id),
+                },
+            });
+            if(res){
+                return res;
+            }else{
+                console.log("error: ")
+                return({status: 400, message: "No Employer Found"})
+            }
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
     async updateEmployer(param:{
-        data: Prisma.EmployerUpdateInput,
-        where: Prisma.EmployerWhereUniqueInput,
+        data: Prisma.employerUpdateInput,
+        where: Prisma.employerWhereUniqueInput,
     }){
         try {
             const res = await this.prisma.employer.update({

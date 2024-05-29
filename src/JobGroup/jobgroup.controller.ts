@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { JobGroupService } from "./jobgroup.service";
-import { JobGroup, Prisma } from "@prisma/client";
+import { jobgroup, jobongroup, Prisma } from "@prisma/client";
 
 @Controller('groups')
 export class JobGroupController {
@@ -24,8 +24,8 @@ export class JobGroupController {
     @Post()
     async createJobGroup(
         @Body()
-        data: Prisma.JobGroupCreateInput
-    ):Promise<JobGroup>
+        data: Prisma.jobgroupCreateInput
+    ):Promise<jobgroup>
     {
         return await this.jobgroupService.createJobGroup(data);   
     }
@@ -34,7 +34,7 @@ export class JobGroupController {
     async updateJobGroup(
         @Param('id') id: string,
         @Body()
-        dto: Prisma.JobGroupUpdateInput
+        dto: Prisma.jobgroupCreateInput
     ){
         return await this.jobgroupService.updateJobGroup({
             where: {groupID: Number(id)},

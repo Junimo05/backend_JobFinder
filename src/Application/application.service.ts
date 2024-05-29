@@ -53,7 +53,7 @@ export class ApplicationService{
         }
     }
 
-    async createApplication(data: Prisma.ApplicationCreateInput){
+    async createApplication(data: Prisma.applicationCreateInput){
         try {
             const res = await this.prisma.application.create({
                 data: data
@@ -67,8 +67,8 @@ export class ApplicationService{
     
     async updateApplication(
         param:{
-            data: Prisma.ApplicationUpdateInput
-            where: Prisma.ApplicationWhereUniqueInput
+            data: Prisma.applicationUpdateInput
+            where: Prisma.applicationWhereUniqueInput
         }
     ){
         try {

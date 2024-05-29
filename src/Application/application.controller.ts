@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { ApplicationService } from "./application.service";
-import { Application, Employee, Prisma } from "@prisma/client";
+import { application, employee, Prisma } from "@prisma/client";
 
 @Controller('applications')
 export class ApplicationController {
@@ -21,8 +21,8 @@ export class ApplicationController {
     @Post()
     async createApplication(
         @Body()
-        data: Prisma.ApplicationCreateInput
-    ):Promise<Application>
+        data: Prisma.applicationCreateInput
+    ):Promise<application>
     {
         return await this.appService.createApplication(data)
     }
@@ -31,7 +31,7 @@ export class ApplicationController {
     async updateAplication(
         @Param('id') id: string,
         @Body()
-        dto: Prisma.ApplicationUpdateInput
+        dto: Prisma.applicationUpdateInput
     ){
         return await this.appService.updateApplication({
             where: {appID: Number(id)},

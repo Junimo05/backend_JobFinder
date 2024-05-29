@@ -71,7 +71,7 @@ export class EmployeeService {
         }
     }
 
-    async createEmployee(data: Prisma.EmployeeCreateInput){
+    async createEmployee(data: Prisma.employeeCreateInput){
         // let tmp: Prisma.JobCreateInput = data
         try {
             const res = await this.prisma.employee.create({data: data});
@@ -84,8 +84,8 @@ export class EmployeeService {
 
     async updateEmployee(
         param:{
-            data: Prisma.EmployeeUpdateInput
-            where: Prisma.EmployeeWhereUniqueInput
+            data: Prisma.employeeUpdateInput
+            where: Prisma.employeeWhereUniqueInput
         }
     ){
         try {

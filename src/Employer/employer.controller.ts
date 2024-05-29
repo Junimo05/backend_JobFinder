@@ -14,16 +14,21 @@ export class EmployerController {
     async getEmployerByID(@Param('id') id: string){
         return this.employerService.getEmployerByID(id);
     }
-    @Get('/searchName/:com_name')
-    async getEmployerByComname(@Param('com_name') com_name: string){
-        return this.employerService.getEmployerByCompany(com_name);
+    @Get('/searchName/:CompanyName')
+    async getEmployerByComname(@Param('CompanyName') CompanyName: string){
+        return this.employerService.getEmployerByCompany(CompanyName);
+    }
+
+    @Get('/searchJobs/:id')
+    async getEmployerJobs(@Param('id') id: string){
+        return this.employerService.getEmployerJobs(id);
     }
 
     @Patch(':id')
     async updateEmployer(
         @Param('id') id: string,
         @Body()
-        dto: Prisma.EmployerUpdateInput
+        dto: Prisma.employerUpdateInput
     ){
         return await this.employerService.updateEmployer({
             where: {employerID: Number(id)},

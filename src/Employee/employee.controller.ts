@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { EmployeeService } from "./employee.service";
-import { Employee, Prisma } from "@prisma/client";
+import { employee, Prisma } from "@prisma/client";
 
 @Controller('employees')
 export class EmployeeController {
@@ -31,7 +31,7 @@ export class EmployeeController {
     async updateEmployee(
         @Param('id') id: string,
         @Body()
-        dto: Prisma.EmployeeUpdateInput
+        dto: Prisma.employeeUpdateInput
     ){
         return await this.employeeService.updateEmployee({
             where: {employeeID: Number(id)},

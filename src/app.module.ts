@@ -13,6 +13,7 @@ import { from } from 'rxjs';
 import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigService from @nestjs/config
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MulterModule } from '@nestjs/platform-express';
 
 
 @Module({
@@ -22,6 +23,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       envFilePath: '.env',
     } 
     ),
+    MulterModule,
     PrismaModule,
     JobModule,
     ApplicationModule,

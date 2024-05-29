@@ -58,20 +58,20 @@ export class JobService {
 
     async SearchJobByGroup(group: string) {
         try {
-            const jobOnGroups = await this.prisma.jobOnGroup.findMany({
+            const jobongroups = await this.prisma.jobongroup.findMany({
                 where: {
-                    JobGroup: {
+                    jobgroup: {
                         jobGroupTitle: group
                     }
                 },
                 include: {
-                    Job: true,
-                    JobGroup: true,
+                    job: true,
+                    jobgroup: true,
                 }
             });
     
-            if(jobOnGroups && jobOnGroups.length > 0){
-                const jobs = jobOnGroups.map(jobOnGroup => jobOnGroup.Job);
+            if(jobongroups && jobongroups.length > 0){
+                const jobs = jobongroups.map(jobongroup => jobongroup.job);
                 return jobs;
             }else{
                 console.log("error: No Job Found")
@@ -101,8 +101,8 @@ export class JobService {
         }
     }
 
-    async createJob(data: Prisma.JobCreateInput){
-        // let tmp: Prisma.JobCreateInput = data
+    async createJob(data: Prisma.jobCreateInput){
+        // let tmp: Prisma.jobCreateInput = data
         try {
             const res = await this.prisma.job.create({data: data});
             return res;
@@ -114,8 +114,8 @@ export class JobService {
 
     async updateJob(
         param:{
-            data: Prisma.JobUpdateInput
-            where: Prisma.JobWhereUniqueInput
+            data: Prisma.jobUpdateInput
+            where: Prisma.jobWhereUniqueInput
         }
     ){
         try {

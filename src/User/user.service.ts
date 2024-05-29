@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User, Prisma } from '@prisma/client';
+import { user, Prisma } from '@prisma/client';
 import { AccountDto } from 'src/auth/dto/account.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -53,9 +53,27 @@ export class UserService {
         } catch (error) {
             throw new Error(error)
         }
-    }
+    }   
 
-    async createUser(data: Prisma.UserCreateInput){
+    async handleFileUpload(id: string, filename: string) {
+        //update image url to db
+        try {
+            const res = await this.prisma.user.update({
+                where: {
+                    userID: parseInt(id)
+                },
+                data: {
+                    imgurl: `http://10.0.2.2:8000/users/${filename}`
+                }
+            });
+            if(res) return res;
+            else throw new Error('Image not updated');
+        }catch(error) {
+            throw new Error("Error updating image url");
+        }
+    }
+    
+    async createUser(data: Prisma.userCreateInput){
         // let tmp: Prisma.UserCreateInput = data
         try {
             const res = await this.prisma.user.create({data: data});
@@ -67,14 +85,14 @@ export class UserService {
     }
 
     async createUserWithEmployee(data: {
-        user: Prisma.UserCreateInput,
-        employee: Prisma.EmployeeCreateInput,
+        user: Prisma.userCreateInput,
+        employee: Prisma.employeeCreateInput,
       }) {
         try {
             const res = await this.prisma.user.create({
                 data: {
                   ...data.user,
-                  Employee: {
+                  employee: {
                     create: data.employee,
                   },
                 },
@@ -87,15 +105,15 @@ export class UserService {
     }
 
     async createUserWithEmployer(data: {
-        user: Prisma.UserCreateInput,
-        employer: Prisma.EmployerCreateInput,
+        user: Prisma.userCreateInput,
+        employer: Prisma.employerCreateInput,
         }) {
         
         try {
             const res = await this.prisma.user.create({
                 data: {
                 ...data.user,
-                Employer: {
+                employer: {
                     create: data.employer,
                 },
                 },
@@ -110,7 +128,7 @@ export class UserService {
     async updatePasswordUser(
         param:{
             data: AccountDto
-            where: Prisma.UserWhereUniqueInput
+            where: Prisma.userWhereUniqueInput
         }
     ){
         try {
@@ -153,7 +171,7 @@ export class UserService {
         }
     }
 
-    async Login(data: Prisma.UserCreateInput) {
+    async Login(data: Prisma.userCreateInput) {
         try {
             const res = await this.prisma.user.findFirst({
                 where: {
@@ -162,7 +180,25 @@ export class UserService {
                 }
             });
             if(res){
-                return res;
+                const employee = await this.prisma.employee.findFirst({
+                    where: {
+                        userID: res.userID
+                    }
+                });
+                const employer = await this.prisma.employer.findFirst({
+                    where: {
+                        userID: res.userID
+                    }
+                });
+                if(employee){
+                    return {...res, role: 'Employee'};
+                }
+                else if(employer){
+                    return {...res, role: 'Employer'};
+                }
+                else{
+                    return {status: 400, message: "User is neither an Employee nor an Employer"};
+                }
             }
             else{
                 return {status: 400, message: "Username or Password is incorrect"};
@@ -172,12 +208,5 @@ export class UserService {
         }
     }
 
-    async Register(data: Prisma.UserCreateInput) {
-        try {
-            const res = await this.prisma.user.create({data: data});
-            return res;
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
+    
 }

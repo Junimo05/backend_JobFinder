@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,45 +7,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  userID   Int       @id @default(autoincrement())
-  username String    @unique
-  password String
-  Employee Employee?
-  Employer Employer?
+model application {
+  appID       Int      @id @default(autoincrement())
+  employeeID  Int
+  jobID       Int
+  Description String
+  applyDate   DateTime @default(now())
+  Status      String   @default("Waiting") //Refused - Accepted - Waiting
+  employee    employee @relation(fields: [employeeID], references: [employeeID], onDelete: Cascade, onUpdate: NoAction, map: "Application_employeeID_fkey")
+  job         job      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction, map: "Application_jobID_fkey")
+
+  @@index([employeeID], map: "Application_employeeID_key")
+  @@index([employeeID], map: "employeeID")
+  @@index([jobID], map: "jobID")
 }
 
-model Employee {
-  employeeID    Int           @id @default(autoincrement())
-  userID        Int           @unique
-  name          String
-  age           Int           @unique
-  Phone         String?       @unique
-  Email         String        @unique
-  AboutMe       String?
-  Hobbies       String?
-  Employee_User User          @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: NoAction)
-  Application   Application[]
+model employee {
+  employeeID  Int           @id @default(autoincrement())
+  userID      Int           @unique(map: "Employee_userID_key")
+  name        String
+  age         Int           @unique(map: "Employee_age_key")
+  Phone       String?       @unique(map: "Employee_Phone_key")
+  Email       String        @unique(map: "Employee_Email_key")
+  AboutMe     String?
+  Hobbies     String?
+  application application[]
+  user        user          @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: NoAction, map: "Employee_userID_fkey")
 
-  @@index([userID])
+  @@index([userID], map: "Employee_userID_idx")
 }
 
-model Employer {
-  employerID    Int    @id @default(autoincrement())
-  userID        Int    @unique
-  CompanyName   String
-  Industry      String //chuyen nganh
-  Email         String @unique
-  Phone         String @unique
-  Employer_User User   @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: NoAction)
-  Job           Job[]
+model employer {
+  employerID  Int    @id @default(autoincrement())
+  userID      Int    @unique(map: "Employer_userID_key")
+  CompanyName String
+  Industry    String
+  Email       String @unique(map: "Employer_Email_key")
+  Phone       String @unique(map: "Employer_Phone_key")
+  user        user   @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: NoAction, map: "Employer_userID_fkey")
+  job         job[]
 
-  @@index([userID])
+  @@index([userID], map: "Employer_userID_idx")
 }
 
-model Job {
+model job {
   jobID        Int           @id @default(autoincrement())
-  employerID   Int           @unique
+  employerID   Int
   JobTitle     String
   Location     String
   Description  String
@@ -61,40 +62,35 @@ model Job {
   PostDate     DateTime      @default(now())
   CloseDate    DateTime
   Deleted      Boolean       @default(false)
-  Application  Application[]
-  Job_Employer Employer      @relation(fields: [employerID], references: [employerID], onDelete: Cascade, onUpdate: NoAction)
-  JobGroup     JobOnGroup[]
+  application  application[]
+  employer     employer      @relation(fields: [employerID], references: [employerID], onDelete: Cascade, onUpdate: NoAction, map: "Job_employerID_fkey")
+  jobongroup   jobongroup?
 
-  @@index([employerID])
+  @@index([employerID], map: "Job_employerID_idx")
 }
 
-model JobGroup {
+model jobgroup {
   groupID       Int          @id @default(autoincrement())
-  jobGroupTitle String       @unique
+  jobGroupTitle String       @unique(map: "JobGroup_jobGroupTitle_key")
   Description   String
-  JobOnGroup    JobOnGroup[]
+  jobongroup    jobongroup[]
 }
 
-model JobOnGroup {
-  jobID    Int       @id
+model jobongroup {
+  jobID    Int      @id
   groupID  Int
-  Job      Job?      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction)
-  JobGroup JobGroup? @relation(fields: [groupID], references: [groupID], onDelete: Cascade, onUpdate: NoAction)
+  jobgroup jobgroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade, onUpdate: NoAction, map: "JobOnGroup_groupID_fkey")
+  job      job      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction, map: "JobOnGroup_jobID_fkey")
 
-  @@index([jobID], map: "jobID")
   @@index([groupID], map: "groupID")
+  @@index([jobID], map: "jobID")
 }
 
-model Application {
-  appID          Int      @id @default(autoincrement())
-  employeeID     Int
-  jobID          Int
-  Description    String
-  applyDate      DateTime @default(now())
-  Status         String   @default("Waiting")
-  Appli_Employee Employee @relation(fields: [employeeID], references: [employeeID], onDelete: Cascade, onUpdate: NoAction)
-  Appli_Job      Job      @relation(fields: [jobID], references: [jobID], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([employeeID], map: "employeeID")
-  @@index([jobID], map: "jobID")
+model user {
+  userID   Int       @id @default(autoincrement())
+  username String    @unique(map: "User_username_key")
+  password String
+  imgurl   String?   @db.VarChar(100)
+  employee employee?
+  employer employer?
 }
