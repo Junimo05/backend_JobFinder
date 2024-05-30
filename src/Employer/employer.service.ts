@@ -16,7 +16,7 @@ export class EmployerService {
             throw new Error(error)
         }
     }
-
+    
     async getEmployerByID(id: string){
         try {
             const res = await this.prisma.employer.findUnique({

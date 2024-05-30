@@ -44,7 +44,7 @@ import { MulterModule } from '@nestjs/platform-express';
           },
         },
         defaults: {
-          from: `"No Reply" <${configService.get('MAIL_FROM')}>`,
+          from: `"Confirmed Email" <${configService.get('MAIL_FROM')}>`,
         },
         template: {
           dir: join(__dirname, '../src/templates/email'),

@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { user, Prisma } from '@prisma/client';
 import { AccountDto } from 'src/auth/dto/account.dto';
+import { changePassDto } from 'src/auth/dto/changepass.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
+
     constructor(private prisma: PrismaService){}
 
     async getAllUsers(){
@@ -125,6 +127,39 @@ export class UserService {
         }
     }
 
+    async changePassword(
+        param:{
+            data: changePassDto
+            where: Prisma.userWhereUniqueInput
+        }
+    ) {
+        try {
+            const { data, where } = param;
+            const user = await this.prisma.user.findFirst({
+                where
+            });
+
+            if(!user){
+                return {msg: "User not found"}
+            }
+            if(user.password === data.oldPassword){
+                const res = await this.prisma.user.update({
+                    data: {
+                        password: data.newPassword
+                    }, 
+                    where
+                });
+                return res;
+            }
+            else{
+                return {msg: "Old Password is incorrect"}
+            }
+        } catch (error) {
+            console.log("Cannot update User")
+            throw new Error(error)
+        }
+    }
+
     async updatePasswordUser(
         param:{
             data: AccountDto
@@ -140,20 +175,13 @@ export class UserService {
             if(!user){
                 return {msg: "User not found"}
             }
-
-            const oldPass = user.password;
-
-            if(oldPass === data.oldPassword){
-                const res = await this.prisma.user.update({
-                    data: {
-                        password: data.newPassword
-                    }, 
-                    where
-                });
-                return res;
-            }else {
-                return {msg: "Password incorrect"}
-            }
+            const res = await this.prisma.user.update({
+                data: {
+                    password: data.newPassword
+                }, 
+                where
+            });
+            return res;
         } catch (error) {
             console.log("Cannot update User")
             throw new Error(error)

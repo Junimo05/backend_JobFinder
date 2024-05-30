@@ -21,7 +21,7 @@ export class EmployeeService {
         try {
             const res = await this.prisma.employee.findUnique({
                 where: {
-                    employeeID: Number(id),
+                    userID: Number(id),
                 },
             });
             if(res){
